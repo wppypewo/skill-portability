@@ -1,30 +1,14 @@
 # skill-portability
 
-Skill 可移植性實驗：把一份在 Claude 上建好的提示詞工作流（skill：法文原文 → 繁中，並轉成指定文體），
-貼進免費版 Gemini Gems，量測效益保留多少、損耗在哪。2026-07-17 至 07-18 完成，已結案。
+English | [繁體中文](README.zh-TW.md)
 
-狀態的單一事實來源是 [PROGRESS.md](PROGRESS.md)，這份 README 只做導覽。
+A skill-portability experiment: a prompt workflow built for Claude (a "skill" that translates French source text into Traditional Chinese in a chosen register) was pasted into a free Gemini Gem to measure how much of its benefit survives the move and where the losses are. Run on 2026-07-17 and 07-18; closed.
 
-## 實驗設計
+The materials, outputs and report are in Traditional Chinese.
 
-- **文本**：T1 波特萊爾〈窗〉（Les Fenêtres）。`inputs/` 另有 T2–T5，未進入評測。
-- **目標文體**：文學（LIT）、新聞（NEWS）、社群（SOC）。
-- **條件**：
+## Main results
 
-  | 代號 | 內容 |
-  |---|---|
-  | REF | Claude 參照組，隔離 subagent 執行完整 skill |
-  | A | Gemini Gem，指令欄貼 `SKILL.md` 全文（9,981 字元） |
-  | B | Gemini Gem，壓縮版指令（3,665 字元） |
-  | B' | B 加回範例（5,192 字元），只跑文學 |
-  | C | Gemini Gem，baseline 指令 `Follow the user's request.` |
-
-- **評分**：rubric 忠實 30 / 語域 25 / 自然 25 / 格式 20；使用者單人盲評，逐筆單獨評分。
-- **次數**：M1 每格 3 次；M2 Gemini 端每格 2 次、REF 3 次（不對稱，報告方法節有註記）。
-
-## 結果（平均分）
-
-| 條件 | 文學 | 新聞 | 社群 |
+| Condition | Literary | News | Social |
 |---|---|---|---|
 | REF | 98.3 | 86.7 | 60.0 |
 | A | 92.7 | 95.0 | 79.5 |
@@ -32,31 +16,55 @@ Skill 可移植性實驗：把一份在 Claude 上建好的提示詞工作流（
 | B' | 90.0 | — | — |
 | C | 61.7 | 52.5 | 80.0 |
 
-- 文學格移植效益大部分保留（A−C = +31.0），損耗集中在語域與自然度（REF−A = +5.7）。
-- 社群格翻盤：skill 的社群規則方向錯誤，照規則做得越徹底分數越低（內容層錯誤被執行層放大）。
-- B 條件的自檢比 A 誠實；B 與 B' 在文學格沒有差異。
+Mean scores out of 100.
 
-細節見 `eval/results_M1.md`、`eval/results_M2.md`。
+- **Most of the benefit survives in the literary register**: A−C = +31.0. The loss is concentrated in register and naturalness (REF−A = +5.7).
+- **The social-media register flips**: C 80.0 / A 79.5 / B 70.0 / REF 60.0. The skill's social-media rules point the wrong way, so the more faithfully a model follows them, the lower it scores. An error in the content layer is amplified by the execution layer.
+- **The compressed instructions self-check more honestly**: in the two new registers, condition B's self-check flagged ✗ honestly in 4 of 4 runs, condition A in 0 of 4. B and B' (B with the examples restored) do not differ on the literary task.
 
-## 目錄
+Details are in [`eval/results_M1.md`](eval/results_M1.md) and [`eval/results_M2.md`](eval/results_M2.md); methodological decisions and conclusions are collected in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
-| 路徑 | 內容 |
+## Design
+
+- **Text**: T1, Baudelaire's "Les Fenêtres". `inputs/` also holds T2–T5, which were not evaluated.
+- **Target registers**: literary (LIT), news (NEWS), social media (SOC).
+- **Conditions**:
+
+  | Code | What it is |
+  |---|---|
+  | REF | Claude reference: the full skill run by an isolated subagent |
+  | A | Gemini Gem with the full `SKILL.md` pasted into the instructions (9,981 characters) |
+  | B | Gemini Gem with compressed instructions (3,665 characters) |
+  | B' | B with the examples added back (5,192 characters), literary only |
+  | C | Gemini Gem with the baseline instruction `Follow the user's request.` |
+
+- **Scoring**: rubric of fidelity 30 / register 25 / naturalness 25 / format 20; one rater, blind, each output scored on its own.
+- **Runs**: M1 three per cell; M2 two per cell on the Gemini side and three for REF (the asymmetry is noted in the report's method section).
+
+## Layout
+
+| Path | Contents |
 |---|---|
-| `skill/SKILL.md` | Claude 版 skill v1 |
-| `gem-instructions/` | 條件 A / B / B' / C 貼進 Gem 的指令 |
-| `inputs/` | T1–T5 法文原文，來源 fr.wikisource.org，各檔含 metadata |
-| `outputs/` | 35 筆原始輸出；`_excluded` 為受個人系統提示污染、不入評分的批次 |
-| `eval/` | rubric、執行手冊、盲測包（`blind/S-01`–`S-31`）、對照表、評分表、結果 |
-| `logs/` | 001–009 迭代日誌 |
-| `report/` | 報告正文 `report_body.*`、附錄 A–E `report_appendices.*`、原始輸出包 `outputs_all_35.zip`、正文改版來源 `draft.md` |
+| `skill/SKILL.md` | The Claude skill, v1 |
+| `gem-instructions/` | The instructions pasted into the Gem for conditions A, B, B' and C |
+| `inputs/` | French source texts T1–T5 from fr.wikisource.org, each with metadata |
+| `outputs/` | 35 raw outputs; `_excluded` marks a batch contaminated by a personal system prompt and left out of scoring |
+| `eval/` | Rubrics, run protocols, blind packs (`blind/S-01`–`S-31`), unblinding keys, score sheets, results |
+| `logs/` | Iteration logs 001–009 |
+| `report/` | The submitted report body `report_body.docx` and appendices A–E `report_appendices.docx`; text versions `report_body.md` and `report_appendices.md`; the body's source draft `draft.md`; outline `outline_v0.md` |
+| `docs/DECISIONS.md` | Methodological decisions, conclusions of both milestones, known data issues |
 
-## 已知不一致
+## Before you read
 
-- 「人工判準的位置」一節（commit `31d6cba`，2026-09-04）只加在 `report/report_body.docx`，
-  `report_body.md` 與 `draft.md` 都沒有。
-- PROGRESS 記載的改版流程用 Word COM 輸出 .docx，那是 Windows 的做法，這台 Mac 不能照跑。
-- PROGRESS 末段的「檔案地圖」與「已決事項 1」（`D:\` 路徑、未 git init）是 07-17 初期內容，已過時。
+- **M1 unblinding follows [`eval/blind_key.md`](eval/blind_key.md).** The M1 blind pack was generated twice on the same day. The other key (`blind_key_DO_NOT_OPEN.md`) belonged to the overwritten first batch and does not match the actual `eval/blind/S-01`–`S-09`, so it has been removed. The report appendices and `eval/scoring_sheet_M1.md` still name the old file; the report has been submitted and is left as is. Scores were not affected; the cross-check is in [`docs/DECISIONS.md`](docs/DECISIONS.md).
+- **The complete report body is `report_body.docx`.** The section on where human judgement sits (added 2026-09-04) exists only in the .docx, not in `report_body.md` or `draft.md`.
+- The 39-file zip attached to the submission was `outputs/` plus `gem-instructions/`. Both are in this repository verbatim, so the zip itself is not kept.
 
-## 後續
+## License
 
-本實驗延伸出 ncucareer-skill（職涯訪談 → 社群貼文），承接社群格翻盤的發現。見 PROGRESS「後續專案銜接」。
+© 2026 wppypewo. The experiment materials, analysis and report are licensed under [CC BY 4.0](LICENSE): you may share and adapt them with attribution.
+Not covered: the French source texts in `inputs/` are public domain (from fr.wikisource.org), and the raw model outputs in `outputs/` and `eval/blind/` were generated by Claude and Gemini and are included as experimental data.
+
+## Follow-up
+
+The experiment led to ncucareer-skill (career interview transcripts → social-media posts), which picks up the social-register finding. See [`docs/DECISIONS.md`](docs/DECISIONS.md).
