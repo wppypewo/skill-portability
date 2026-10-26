@@ -1,2 +1,8 @@
 # macOS 檔案總管產生的中繼資料，不進版控
 .DS_Store
+
+# AI 代理人的進度檔（2026-10-26 移出版控，實質內容整理到 docs/DECISIONS.md）
+/PROGRESS.md
+/CLAUDE.md
+/AGENTS.md
+/.claude/
