@@ -59,6 +59,11 @@ Skill 可移植性實驗：把一份在 Claude 上建好的提示詞工作流（
 - **正文的完整版是 `report_body.docx`。** 「人工判準的位置」一節（2026-09-04）只加在 docx，`report_body.md` 與 `draft.md` 都沒有。
 - 交給老師的 zip 附件（39 檔）就是 `outputs/` 加 `gem-instructions/`，repo 裡都有逐字相同的副本，所以沒有另外存一份 zip。
 
+## 授權
+
+© 2026 wppypewo。實驗材料、分析與報告以 [CC BY 4.0](LICENSE) 授權：標明出處即可分享與改作。
+不在範圍內的：`inputs/` 的法文原文是公有領域（取自 fr.wikisource.org）；`outputs/` 與 `eval/blind/` 的原始輸出由 Claude 與 Gemini 產生，作為實驗資料收錄。
+
 ## 後續
 
 本實驗延伸出 ncucareer-skill（職涯訪談 → 社群貼文），承接社群格翻盤的發現，見 [`docs/DECISIONS.md`](docs/DECISIONS.md)。
